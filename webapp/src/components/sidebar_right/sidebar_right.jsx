@@ -148,20 +148,20 @@ export default class SidebarRight extends React.PureComponent {
     render() {
         const style = getStyle();
         let todos = [];
-        let listHeading = 'My Todos';
+        let listHeading = '내 Todo';
         let addButton = '';
         let inboxList = [];
 
         switch (this.state.list) {
         case MyListName:
             todos = this.props.todos || [];
-            addButton = 'Add Todo';
+            addButton = 'Todo 추가';
             inboxList = this.props.inTodos || [];
             break;
         case OutListName:
             todos = this.props.outTodos || [];
-            listHeading = 'Sent Todos';
-            addButton = 'Request a Todo from someone';
+            listHeading = '보낸 Todo';
+            addButton = '다른 멤버에게 받은 Todo 요청';
             break;
         }
 
@@ -186,7 +186,7 @@ export default class SidebarRight extends React.PureComponent {
                         onClick={() => this.toggleInbox()}
                     >
                         {actionName}
-                        <div>{`Incoming Todos (${inboxList.length})`}</div>
+                        <div>{`받은 Todo항목 (${inboxList.length})`}</div>
                     </div>
                     {this.state.showInbox ?
                         <ToDoIssues
@@ -221,7 +221,7 @@ export default class SidebarRight extends React.PureComponent {
                     onClick={() => this.toggleMy()}
                 >
                     {actionName}
-                    {`My Todos (${todos.length})`}
+                    {`내 Todo (${todos.length})`}
                 </div>
             );
         }
@@ -252,11 +252,11 @@ export default class SidebarRight extends React.PureComponent {
                                 <MenuItem
                                     onClick={() => this.openList(MyListName)}
                                     action={() => this.openList(MyListName)}
-                                    text={'My Todos'}
+                                    text={'내 Todo'}
                                 />
                                 <MenuItem
                                     action={() => this.openList(OutListName)}
-                                    text={'Sent Todos'}
+                                    text={'보낸 Todo'}
                                 />
                             </Menu>
                         </MenuWrapper>

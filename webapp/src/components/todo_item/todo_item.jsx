@@ -37,7 +37,7 @@ function TodoItem(props) {
     const minutes = '0' + date.getMinutes();
     const seconds = '0' + date.getSeconds();
     const formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-    const formattedDate = month + ' ' + day + ', ' + year;
+    const formattedDate = year + '-' + month + '-' + day;
 
     const style = getStyle(theme);
 
@@ -55,18 +55,18 @@ function TodoItem(props) {
     const issueDescription = PostUtils.messageHtmlToComponent(htmlFormattedDescription);
 
     let listPositionMessage = '';
-    let createdMessage = 'Created ';
+    let createdMessage = '생성됨 ';
     if (issue.user) {
         if (issue.list === '') {
-            createdMessage = 'Sent to ' + issue.user;
+            createdMessage = issue.user + '에게 보냈습니다';
             listPositionMessage =
                 'Accepted. On position ' + (issue.position + 1) + '.';
         } else if (issue.list === 'in') {
-            createdMessage = 'Sent to ' + issue.user;
+            createdMessage = issue.user + '에게 보냈습니다';
             listPositionMessage =
                 'In Inbox on position ' + (issue.position + 1) + '.';
         } else if (issue.list === 'out') {
-            createdMessage = 'Received from ' + issue.user;
+            createdMessage = '보낸 사용자: ' + issue.user;
             listPositionMessage = '';
         }
     }
@@ -107,7 +107,7 @@ function TodoItem(props) {
     const removeTimeout = useRef(null);
 
     const completeToast = useCallback(() => {
-        openTodoToast({icon: 'check', message: 'Todo completed', undo: undoCompleteTodo});
+        openTodoToast({icon: 'check', message: 'Todo 완료됨', undo: undoCompleteTodo});
 
         setHidden(true);
 
@@ -138,7 +138,7 @@ function TodoItem(props) {
     );
 
     const removeTodo = useCallback(() => {
-        openTodoToast({icon: 'trash-can-outline', message: 'Todo deleted', undo: undoRemoveTodo});
+        openTodoToast({icon: 'trash-can-outline', message: 'Todo 삭제됨', undo: undoRemoveTodo});
         setHidden(true);
         removeTimeout.current = setTimeout(() => {
             remove(issue.id);
@@ -168,7 +168,7 @@ function TodoItem(props) {
                             <div>
                                 <TextareaAutosize
                                     style={style.textareaResizeMessage}
-                                    placeholder='Enter a title'
+                                    placeholder='제목을 입력하세요'
                                     value={message}
                                     autoFocus={true}
                                     onKeyDown={(e) => onKeyDown(e)}
@@ -176,7 +176,7 @@ function TodoItem(props) {
                                 />
                                 <TextareaAutosize
                                     style={style.textareaResizeDescription}
-                                    placeholder='Enter a description'
+                                    placeholder='내용을 입력하세요'
                                     value={description}
                                     onKeyDown={(e) => onKeyDown(e)}
                                     onChange={(e) => setDescription(e.target.value)}
@@ -200,7 +200,7 @@ function TodoItem(props) {
                                         className='light'
                                         style={style.subtitle}
                                     >
-                                        {createdMessage + ' on ' + formattedDate + ' at ' + formattedTime}
+                                        {createdMessage + ', 보낸 날짜: ' + formattedDate + ', 보낸 시각:' + formattedTime}
                                     </div>
                                 )}
                                 {listPositionMessage && listDiv}
@@ -217,7 +217,7 @@ function TodoItem(props) {
                             {canAccept(list) && (
                                 <MenuItem
                                     action={() => accept(issue.id)}
-                                    text='Accept todo'
+                                    text='Todo 수락'
                                     icon='check'
                                 />
                             )}
@@ -229,13 +229,13 @@ function TodoItem(props) {
                                 />
                             )}
                             <MenuItem
-                                text='Edit todo'
+                                text='Todo 편집'
                                 icon='pencil-outline'
                                 action={() => setEditTodo(true)}
                                 shortcut='e'
                             />
                             <MenuItem
-                                text='Assign to…'
+                                text='담당자 지정'
                                 icon='account-plus-outline'
                                 action={editAssignee}
                                 shortcut='a'
@@ -243,7 +243,7 @@ function TodoItem(props) {
                             {canRemove(list, issue.list) && (
                                 <MenuItem
                                     action={removeTodo}
-                                    text='Delete todo'
+                                    text='Todo 삭제'
                                     icon='trash-can-outline'
                                     shortcut='d'
                                 />
@@ -263,14 +263,14 @@ function TodoItem(props) {
                         size='small'
                         onClick={() => setEditTodo(false)}
                     >
-                        {'Cancel'}
+                        {'취소'}
                     </Button>
                     <Button
                         emphasis='primary'
                         size='small'
                         onClick={saveEditedTodo}
                     >
-                        {'Save'}
+                        {'저장'}
                     </Button>
                 </div>
             )}

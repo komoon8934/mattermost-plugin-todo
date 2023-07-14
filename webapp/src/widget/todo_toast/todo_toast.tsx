@@ -64,7 +64,7 @@ function TodoToast(props: Props): JSX.Element {
                         onClick={undoTodo}
                         className='TodoToast__undo'
                     >
-                        {'Undo'}
+                        {'되돌리기'}
                     </button>
                 </div>
                 <IconButton

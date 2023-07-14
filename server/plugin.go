@@ -305,7 +305,7 @@ func (p *Plugin) handleList(w http.ResponseWriter, r *http.Request) {
 		nt := time.Unix(now/1000, 0).In(timezone)
 		lt := time.Unix(lastReminderAt/1000, 0).In(timezone)
 		if nt.Sub(lt).Hours() >= 1 && (nt.Day() != lt.Day() || nt.Month() != lt.Month() || nt.Year() != lt.Year()) {
-			p.PostBotDM(userID, "Daily Reminder:\n\n"+issuesListToString(issues))
+			p.PostBotDM(userID, "일일 리마인더:\n\n"+issuesListToString(issues))
 			p.trackDailySummary(userID)
 			err = p.saveLastReminderTimeForUser(userID)
 			if err != nil {
@@ -463,7 +463,7 @@ func (p *Plugin) handleAccept(w http.ResponseWriter, r *http.Request) {
 	p.sendRefreshEvent(sender, []string{OutListKey})
 
 	userName := p.listManager.GetUserName(userID)
-	message := fmt.Sprintf("@%s accepted a Todo you sent: %s", userName, todoMessage)
+	message := fmt.Sprintf("@%s이(가) 내가 보낸 Todo를 수락했습니다: %s", userName, todoMessage)
 	p.PostBotDM(sender, message)
 }
 
@@ -498,7 +498,7 @@ func (p *Plugin) handleComplete(w http.ResponseWriter, r *http.Request) {
 	p.trackCompleteIssue(userID)
 
 	userName := p.listManager.GetUserName(userID)
-	replyMessage := fmt.Sprintf("@%s completed a todo attached to this thread", userName)
+	replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 첨부된 Todo를 완료했습니다", userName)
 	p.postReplyIfNeeded(issue.PostID, replyMessage, issue.Message)
 
 	if foreignID == "" {
@@ -507,7 +507,7 @@ func (p *Plugin) handleComplete(w http.ResponseWriter, r *http.Request) {
 
 	p.sendRefreshEvent(foreignID, []string{OutListKey})
 
-	message := fmt.Sprintf("@%s completed a Todo you sent: %s", userName, issue.Message)
+	message := fmt.Sprintf("@%s이(가) 내가 보낸 Todo를 완료했습니다: %s", userName, issue.Message)
 	p.PostBotDM(foreignID, message)
 }
 
@@ -542,7 +542,7 @@ func (p *Plugin) handleRemove(w http.ResponseWriter, r *http.Request) {
 	p.trackRemoveIssue(userID)
 
 	userName := p.listManager.GetUserName(userID)
-	replyMessage := fmt.Sprintf("@%s removed a todo attached to this thread", userName)
+	replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 첨부된 Todo를 제거했습니다", userName)
 	p.postReplyIfNeeded(issue.PostID, replyMessage, issue.Message)
 
 	if foreignID == "" {
@@ -551,9 +551,9 @@ func (p *Plugin) handleRemove(w http.ResponseWriter, r *http.Request) {
 
 	list := InListKey
 
-	message := fmt.Sprintf("@%s removed a Todo you received: %s", userName, issue.Message)
+	message := fmt.Sprintf("@%s이(가) 내가 받은 Todo를 제거했습니다: %s", userName, issue.Message)
 	if isSender {
-		message = fmt.Sprintf("@%s declined a Todo you sent: %s", userName, issue.Message)
+		message = fmt.Sprintf("@%s이(가) 내가 보낸 Todo를 거절했습니다: %s", userName, issue.Message)
 		list = OutListKey
 	}
 
@@ -598,7 +598,7 @@ func (p *Plugin) handleBump(w http.ResponseWriter, r *http.Request) {
 	p.sendRefreshEvent(foreignUser, []string{InListKey})
 
 	userName := p.listManager.GetUserName(userID)
-	message := fmt.Sprintf("@%s bumped a Todo you received.", userName)
+	message := fmt.Sprintf("@%s이(가) 내가 받은 Todo를 강조했습니다.", userName)
 	p.PostBotCustomDM(foreignUser, message, todoMessage, foreignIssueID)
 }
 

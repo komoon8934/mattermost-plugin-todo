@@ -18,62 +18,62 @@ const (
 )
 
 func getHelp() string {
-	return `Available Commands:
+	return `지원되는 명령어:
 
-add [message]
-	Adds a Todo.
+add [메시지]
+	Todo를 추가합니다.
 
-	example: /todo add Don't forget to be awesome
+	예: /todo add 회의록 작성 및 배포
 
 list
-	Lists your Todo issues.
+	내 Todo 목록을 봅니다.
 
 list [listName]
-	List your issues in certain list
+	특정 목록을 조회합니다
 
-	example: /todo list in
-	example: /todo list out
-	example (same as /todo list): /todo list my
+	예: /todo list in
+	예: /todo list out
+	예: /todo list my (/todo list와 동일)
 
 pop
-	Removes the Todo issue at the top of the list.
+	Todo 목록의 맨 상단 항목을 제거합니다.
 
 send [user] [message]
-	Sends some user a Todo
+	[user]에게 Todo를 보냅니다.
 
-	example: /todo send @awesomePerson Don't forget to be awesome
+	예: /todo send @someone 캘린더에 회의 공지해주세요 
 
 settings summary [on, off]
-	Sets user preference on daily reminders
+	일일 리마인더에 대한 사용자 설정을 지정합니다
 
-	example: /todo settings summary on
+	예: /todo settings summary on
 
 settings allow_incoming_task_requests [on, off]
-	Allow other Mattermost users to send a task for you to accept/decline?
+	다른 사용자의 Todo Task 보내기 수락 여부를 설정합니다
 
-	example: /todo settings allow_incoming_task_requests on
+	예: /todo settings allow_incoming_task_requests on
 
 
 help
-	Display usage.
+	사용법을 보여줍니다.
 `
 }
 
 func getSummarySetting(flag bool) string {
 	if flag {
-		return "Reminder setting is set to `on`. **You will receive daily reminders.**"
+		return "리마인더를 `on`으로 설정했습니다. **일일 리마인더를 수신하게 됩니다.**"
 	}
-	return "Reminder setting is set to `off`. **You will not receive daily reminders.**"
+	return "리마인더를 `off`로 설정했습니다. **일일 리마인더를 수신하지 않습니다.**"
 }
 func getAllowIncomingTaskRequestsSetting(flag bool) string {
 	if flag {
-		return "Allow incoming task requests setting is set to `on`. **Other users can send you task request that you can accept/decline.**"
+		return "들어오는 Task 요청 허용을 `on`으로 설정했습니다. **다른 사용자가 Task 요청을 보낼 수 있습니다. 받은 요청을 수락/거부 할 수 있습니다.**"
 	}
-	return "Allow incoming task requests setting is set to `off`. **Other users cannot send you task request. They will see a message saying you don't accept Todo requests.**"
+	return "들어오는 Task 요청 허용을 `off`로 설정했습니다. **다른 사용자가 Task 요청을 보낼 수 없습니다. 다른 사용자에게는 내가 Task 요청을 접수 거부했다는 메시지를 받게됩니다**"
 }
 
 func getAllSettings(summaryFlag, blockIncomingFlag bool) string {
-	return fmt.Sprintf(`Current Settings:
+	return fmt.Sprintf(`현재 설정:
 
 %s
 %s
@@ -84,9 +84,9 @@ func getCommand() *model.Command {
 	return &model.Command{
 		Trigger:          "todo",
 		DisplayName:      "Todo Bot",
-		Description:      "Interact with your Todo list.",
+		Description:      "Todo list와 상호작용 기능을 제공합니다.",
 		AutoComplete:     true,
-		AutoCompleteDesc: "Available commands: add, list, pop, send, help",
+		AutoCompleteDesc: "지원되는 명령어: add, list, pop, send, help",
 		AutoCompleteHint: "[command]",
 		AutocompleteData: getAutocompleteData(),
 	}
@@ -143,10 +143,10 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 	isUserError, err := handler(restOfArgs, args)
 	if err != nil {
 		if isUserError {
-			p.postCommandResponse(args, fmt.Sprintf("__Error: %s.__\n\nRun `/todo help` for usage instructions.", err.Error()))
+			p.postCommandResponse(args, fmt.Sprintf("__Error: %s.__\n\n사용법을 보려면 `/todo help`를 실행하세요.", err.Error()))
 		} else {
 			p.API.LogError(err.Error())
-			p.postCommandResponse(args, "An unknown error occurred. Please talk to your system administrator for help.")
+			p.postCommandResponse(args, "알 수 없는 오류가 발생했습니다. 시스템 관리자에게 도움을 요청하세요.")
 		}
 	}
 
@@ -155,7 +155,7 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 
 func (p *Plugin) runSendCommand(args []string, extra *model.CommandArgs) (bool, error) {
 	if len(args) < 2 {
-		p.postCommandResponse(extra, "You must specify a user and a message.\n"+getHelp())
+		p.postCommandResponse(extra, "반드시 유효한 사용자와 메시지를 지정해야합니다.\n"+getHelp())
 		return false, nil
 	}
 
@@ -165,7 +165,7 @@ func (p *Plugin) runSendCommand(args []string, extra *model.CommandArgs) (bool, 
 	}
 	receiver, appErr := p.API.GetUserByUsername(userName)
 	if appErr != nil {
-		p.postCommandResponse(extra, "Please, provide a valid user.\n"+getHelp())
+		p.postCommandResponse(extra, "유효한 사용자를 지정하세요.\n"+getHelp())
 		return false, nil
 	}
 
@@ -175,11 +175,11 @@ func (p *Plugin) runSendCommand(args []string, extra *model.CommandArgs) (bool, 
 
 	receiverAllowIncomingTaskRequestsPreference, err := p.getAllowIncomingTaskRequestsPreference(receiver.Id)
 	if err != nil {
-		p.API.LogError("Error when getting allow incoming task request preference, err=", err)
+		p.API.LogError("들어오는 Task 요청 허용에 대한 설정 확인 시 오류가 발생했습니다, err=", err)
 		receiverAllowIncomingTaskRequestsPreference = true
 	}
 	if !receiverAllowIncomingTaskRequestsPreference {
-		p.postCommandResponse(extra, fmt.Sprintf("@%s has blocked Todo requests", userName))
+		p.postCommandResponse(extra, fmt.Sprintf("@%s은(는) Todo 요청을 차단 중입니다", userName))
 		return false, nil
 	}
 
@@ -195,11 +195,11 @@ func (p *Plugin) runSendCommand(args []string, extra *model.CommandArgs) (bool, 
 	p.sendRefreshEvent(extra.UserId, []string{OutListKey})
 	p.sendRefreshEvent(receiver.Id, []string{InListKey})
 
-	responseMessage := fmt.Sprintf("Todo sent to @%s.", userName)
+	responseMessage := fmt.Sprintf("@%s에게 Todo를 보냈습니다.", userName)
 
 	senderName := p.listManager.GetUserName(extra.UserId)
 
-	receiverMessage := fmt.Sprintf("You have received a new Todo from @%s", senderName)
+	receiverMessage := fmt.Sprintf("@%s(으)로부터 새 Todo 요청을 받았습니다", senderName)
 
 	p.PostBotCustomDM(receiver.Id, receiverMessage, message, receiverIssueID)
 	p.postCommandResponse(extra, responseMessage)
@@ -210,7 +210,7 @@ func (p *Plugin) runAddCommand(args []string, extra *model.CommandArgs) (bool, e
 	message := strings.Join(args, " ")
 
 	if message == "" {
-		p.postCommandResponse(extra, "Please add a task.")
+		p.postCommandResponse(extra, "Task를 추가하세요.")
 		return false, nil
 	}
 
@@ -223,7 +223,7 @@ func (p *Plugin) runAddCommand(args []string, extra *model.CommandArgs) (bool, e
 
 	p.sendRefreshEvent(extra.UserId, []string{MyListKey})
 
-	responseMessage := "Added Todo."
+	responseMessage := "Todo가 추가되었습니다."
 
 	issues, err := p.listManager.GetIssueList(extra.UserId, MyListKey)
 	if err != nil {
@@ -257,17 +257,17 @@ func (p *Plugin) runAddCommand(args []string, extra *model.CommandArgs) (bool, e
 
 func (p *Plugin) runListCommand(args []string, extra *model.CommandArgs) (bool, error) {
 	listID := MyListKey
-	responseMessage := "Todo List:\n\n"
+	responseMessage := "Todo 목록:\n\n"
 
 	if len(args) > 0 {
 		switch args[0] {
 		case MyFlag:
 		case InFlag:
 			listID = InListKey
-			responseMessage = "Received Todo list:\n\n"
+			responseMessage = "받은 Todo 목록:\n\n"
 		case OutFlag:
 			listID = OutListKey
-			responseMessage = "Sent Todo list:\n\n"
+			responseMessage = "보낸 Todo 목록:\n\n"
 		default:
 			p.postCommandResponse(extra, getHelp())
 			return true, nil
@@ -291,7 +291,7 @@ func (p *Plugin) runPopCommand(args []string, extra *model.CommandArgs) (bool, e
 	issue, foreignID, err := p.listManager.PopIssue(extra.UserId)
 	if err != nil {
 		if err.Error() == "cannot find issue" {
-			p.postCommandResponse(extra, "There are no Todos to pop.")
+			p.postCommandResponse(extra, "제거할 Todo가 없습니다.")
 			return false, nil
 		}
 		return false, err
@@ -302,15 +302,15 @@ func (p *Plugin) runPopCommand(args []string, extra *model.CommandArgs) (bool, e
 	if foreignID != "" {
 		p.sendRefreshEvent(foreignID, []string{OutListKey})
 
-		message := fmt.Sprintf("@%s popped a Todo you sent: %s", userName, issue.Message)
+		message := fmt.Sprintf("@%s이(가) 내가 보낸 Todo를 삭제했습니다: %s", userName, issue.Message)
 		p.PostBotDM(foreignID, message)
 	}
 
 	p.sendRefreshEvent(extra.UserId, []string{MyListKey})
 
-	responseMessage := "Removed top Todo."
+	responseMessage := "맨 위에 있는 Todo 항목을 제거했습니다."
 
-	replyMessage := fmt.Sprintf("@%s popped a todo attached to this thread", userName)
+	replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 첨부된 Todo 맨 위 항목을 제거했습니다", userName)
 	p.postReplyIfNeeded(issue.PostID, replyMessage, issue.Message)
 
 	issues, err := p.listManager.GetIssueList(extra.UserId, MyListKey)
@@ -336,7 +336,7 @@ func (p *Plugin) runSettingsCommand(args []string, extra *model.CommandArgs) (bo
 		currentSummarySetting := p.getReminderPreference(extra.UserId)
 		currentAllowIncomingTaskRequestsSetting, err := p.getAllowIncomingTaskRequestsPreference(extra.UserId)
 		if err != nil {
-			p.API.LogError("Error when getting allow incoming task request preference, err=", err)
+			p.API.LogError("들어오는 Task 요청 허용에 대한 설정 확인 시 오류가 발생했습니다, err=", err)
 			currentAllowIncomingTaskRequestsSetting = true
 		}
 		p.postCommandResponse(extra, getAllSettings(currentSummarySetting, currentAllowIncomingTaskRequestsSetting))
@@ -351,7 +351,8 @@ func (p *Plugin) runSettingsCommand(args []string, extra *model.CommandArgs) (bo
 			return false, nil
 		}
 		if len(args) > 2 {
-			return true, errors.New("too many arguments")
+			return true, errors.New("너무 많은 인수들입니다")
+			// return true, errors.New("too many arguments")
 		}
 		var responseMessage string
 		var err error
@@ -359,18 +360,18 @@ func (p *Plugin) runSettingsCommand(args []string, extra *model.CommandArgs) (bo
 		switch args[1] {
 		case on:
 			err = p.saveReminderPreference(extra.UserId, true)
-			responseMessage = "You will start receiving daily summaries."
+			responseMessage = "이제부터 일일 요약을 수신합니다."
 		case off:
 			err = p.saveReminderPreference(extra.UserId, false)
-			responseMessage = "You will stop receiving daily summaries."
+			responseMessage = "이제부터 일일 요약을 수신하지 않습니다."
 		default:
-			responseMessage = "invalid input, allowed values for \"settings summary\" are `on` or `off`"
+			responseMessage = "유효하지 않은 입력 값입니다. \"settings summary\"에 허용되는 값은 `on` 또는 `off`입니다"
 			return true, errors.New(responseMessage)
 		}
 
 		if err != nil {
-			responseMessage = "error saving the reminder preference"
-			p.API.LogDebug("runSettingsCommand: error saving the reminder preference", "error", err.Error())
+			responseMessage = "리마인더 설정 저장 오류입니다"
+			p.API.LogDebug("runSettingsCommand: 리마인더 설정 저장 오류입니다", "error", err.Error())
 			return false, errors.New(responseMessage)
 		}
 
@@ -380,14 +381,14 @@ func (p *Plugin) runSettingsCommand(args []string, extra *model.CommandArgs) (bo
 		if len(args) < 2 {
 			currentAllowIncomingTaskRequestsSetting, err := p.getAllowIncomingTaskRequestsPreference(extra.UserId)
 			if err != nil {
-				p.API.LogError("unable to parse the allow incoming task requests preference, err=", err.Error())
+				p.API.LogError("들어오는 Task 요청 승인에 대한 설정을 읽을 수 없습니다, err=", err.Error())
 				currentAllowIncomingTaskRequestsSetting = true
 			}
 			p.postCommandResponse(extra, getAllowIncomingTaskRequestsSetting(currentAllowIncomingTaskRequestsSetting))
 			return false, nil
 		}
 		if len(args) > 2 {
-			return true, errors.New("too many arguments")
+			return true, errors.New("너무 많은 인수들입니다")
 		}
 		var responseMessage string
 		var err error
@@ -395,66 +396,66 @@ func (p *Plugin) runSettingsCommand(args []string, extra *model.CommandArgs) (bo
 		switch args[1] {
 		case on:
 			err = p.saveAllowIncomingTaskRequestsPreference(extra.UserId, true)
-			responseMessage = "Other users can send task for you to accept/decline"
+			responseMessage = "다른 사용자들이 Task 요청을 보낼 수 있습니다. 받은 요청은 수락/거부할 수 있습니다"
 		case off:
 			err = p.saveAllowIncomingTaskRequestsPreference(extra.UserId, false)
-			responseMessage = "Other users cannot send you task request. They will see a message saying you have blocked incoming task requests"
+			responseMessage = "다른 사용자들이 Task 요청을 보낼 수 없습니다. 요청을 보낸 사용자는 내가 Task 요청을 접수 거부했다는 메시지를 받게됩니다."
 		default:
-			responseMessage = "invalid input, allowed values for \"settings allow_incoming_task_requests\" are `on` or `off`"
+			responseMessage = "유효하지 않은 입력, \"settings allow_incoming_task_requests\"에 허용되는 값은 `on` 또는 `off`입니다."
 			return true, errors.New(responseMessage)
 		}
 
 		if err != nil {
-			responseMessage = "error saving the block_incoming preference"
-			p.API.LogDebug("runSettingsCommand: error saving the block_incoming preference", "error", err.Error())
+			responseMessage = "block_incoming 설정 저장 오류"
+			p.API.LogDebug("runSettingsCommand: block_incoming 설정 저장 오류", "error", err.Error())
 			return false, errors.New(responseMessage)
 		}
 
 		p.postCommandResponse(extra, responseMessage)
 	default:
-		return true, fmt.Errorf("setting `%s` not recognized", args[0])
+		return true, fmt.Errorf("setting `%s` 식별되지 않습니다", args[0])
 	}
 	return false, nil
 }
 
 func getAutocompleteData() *model.AutocompleteData {
-	todo := model.NewAutocompleteData("todo", "[command]", "Available commands: list, add, pop, send, settings, help")
+	todo := model.NewAutocompleteData("todo", "[command]", "지원되는 명령어: list, add, pop, send, settings, help")
 
-	add := model.NewAutocompleteData("add", "[message]", "Adds a Todo")
-	add.AddTextArgument("E.g. be awesome", "[message]", "")
+	add := model.NewAutocompleteData("add", "[message]", "추가할 Todo 내용")
+	add.AddTextArgument("예: 회의 준비", "[message]", "")
 	todo.AddCommand(add)
 
-	list := model.NewAutocompleteData("list", "[name]", "Lists your Todo issues")
+	list := model.NewAutocompleteData("list", "[name]", "내 Todo 목록 보기")
 	items := []model.AutocompleteListItem{{
-		HelpText: "Received Todos",
-		Hint:     "(optional)",
+		HelpText: "받은 Todo",
+		Hint:     "(옵션)",
 		Item:     "in",
 	}, {
-		HelpText: "Sent Todos",
-		Hint:     "(optional)",
+		HelpText: "보낸 Todo",
+		Hint:     "(옵션)",
 		Item:     "out",
 	}}
-	list.AddStaticListArgument("Lists your Todo issues", false, items)
+	list.AddStaticListArgument("내 Todo 목록 보기", false, items)
 	todo.AddCommand(list)
 
-	pop := model.NewAutocompleteData("pop", "", "Removes the Todo issue at the top of the list")
+	pop := model.NewAutocompleteData("pop", "", "목록의 맨 위 Todo 항목을 제거")
 	todo.AddCommand(pop)
 
-	send := model.NewAutocompleteData("send", "[user] [todo]", "Sends a Todo to a specified user")
-	send.AddTextArgument("Whom to send", "[@awesomePerson]", "")
-	send.AddTextArgument("Todo message", "[message]", "")
+	send := model.NewAutocompleteData("send", "[user] [todo]", "특정 사용자에게 Todo 보내기")
+	send.AddTextArgument("받을 사용자", "[@awesomePerson]", "")
+	send.AddTextArgument("Todo 메시지", "[message]", "")
 	todo.AddCommand(send)
 
-	settings := model.NewAutocompleteData("settings", "[setting] [on] [off]", "Sets the user settings")
-	summary := model.NewAutocompleteData("summary", "[on] [off]", "Sets the summary settings")
-	summaryOn := model.NewAutocompleteData("on", "", "sets the daily reminder to enable")
-	summaryOff := model.NewAutocompleteData("off", "", "sets the daily reminder to disable")
+	settings := model.NewAutocompleteData("settings", "[setting] [on] [off]", "사용자 설정")
+	summary := model.NewAutocompleteData("summary", "[on] [off]", "summary 설정")
+	summaryOn := model.NewAutocompleteData("on", "", "일일 리마인더를 사용으로 설정")
+	summaryOff := model.NewAutocompleteData("off", "", "일일 리마인더를 사용안함으로 설정")
 	summary.AddCommand(summaryOn)
 	summary.AddCommand(summaryOff)
 
-	allowIncomingTask := model.NewAutocompleteData("allow_incoming_task_requests", "[on] [off]", "Allow other Mattermost users to send a task for you to accept/decline?")
-	allowIncomingTaskOn := model.NewAutocompleteData("on", "", "Allow others to send you a Task, you can accept/decline")
-	allowIncomingTaskOff := model.NewAutocompleteData("off", "", "Block others from sending you a Task, they will see a message saying you don't accept Todo requests")
+	allowIncomingTask := model.NewAutocompleteData("allow_incoming_task_requests", "[on] [off]", "다른 사용자가 나에게 Task 보내기를 허용여부 설정")
+	allowIncomingTaskOn := model.NewAutocompleteData("on", "", "다른 사용자는 Task 요청을 보낼 수 있고 내가 수락/거부를 결정")
+	allowIncomingTaskOff := model.NewAutocompleteData("off", "", "다른 사용자의 Task 요청을 차단하고, 보낸 사용자에게는 내가 Todo Task 요청을 차단 중임을 알림")
 	allowIncomingTask.AddCommand(allowIncomingTaskOn)
 	allowIncomingTask.AddCommand(allowIncomingTaskOff)
 
@@ -462,7 +463,7 @@ func getAutocompleteData() *model.AutocompleteData {
 	settings.AddCommand(allowIncomingTask)
 	todo.AddCommand(settings)
 
-	help := model.NewAutocompleteData("help", "", "Display usage")
+	help := model.NewAutocompleteData("help", "", "사용안내")
 	todo.AddCommand(help)
 	return todo
 }

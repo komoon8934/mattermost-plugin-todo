@@ -68,7 +68,7 @@ const AssigneeModal = (
             style={style.backdrop}
         >
             <div style={style.modal}>
-                <h1 style={style.heading}>{'Assign todo to…'}</h1>
+                <h1 style={style.heading}>{'Todo 처리 담당자 선택'}</h1>
                 <IconButton
                     size='medium'
                     style={style.closeIcon}
@@ -92,7 +92,7 @@ const AssigneeModal = (
                         size='medium'
                         onClick={closeModal}
                     >
-                        {'Cancel'}
+                        {'취소'}
                     </Button>
                     <Button
                         emphasis='primary'
@@ -100,7 +100,7 @@ const AssigneeModal = (
                         onClick={submit}
                         disabled={!assignee}
                     >
-                        {'Assign'}
+                        {'담당자 지정'}
                     </Button>
                 </div>
             </div>

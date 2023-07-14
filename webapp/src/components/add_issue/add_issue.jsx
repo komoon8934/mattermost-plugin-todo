@@ -143,7 +143,7 @@ export default class AddIssue extends React.PureComponent {
                                 <React.Fragment>
                                     <TextareaAutosize
                                         style={style.textareaResizeMessage}
-                                        placeholder='Enter a title'
+                                        placeholder='제목을 입력하세요'
                                         autoFocus={true}
                                         onKeyDown={(e) => this.onKeyDown(e)}
                                         value={message}
@@ -155,7 +155,7 @@ export default class AddIssue extends React.PureComponent {
                                     />
                                     <TextareaAutosize
                                         style={style.textareaResizeDescription}
-                                        placeholder='Enter a description'
+                                        placeholder='내용을 입력하세요'
                                         onKeyDown={(e) => this.onKeyDown(e)}
                                         value={description}
                                         onChange={(e) =>
@@ -175,11 +175,11 @@ export default class AddIssue extends React.PureComponent {
                                         checked={this.state.attachToThread}
                                         onChange={this.handleAttachChange}
                                     />
-                                    <b>{' Add to thread'}</b>
+                                    <b>{' 스레드에 추가'}</b>
                                 </label>
                                 <div className='help-text'>
                                     {
-                                        'Select to have the Todo Bot respond to the thread when the attached todo is added, modified or completed.'
+                                        'Todo 추가, 수정 또는 완료될 때 Todo 봇이 스레드에 응답하도록 하려면 선택하세요.'
                                     }
                                 </div>
                             </div>
@@ -191,7 +191,7 @@ export default class AddIssue extends React.PureComponent {
                                     icon={<CompassIcon icon='account-outline'/>}
                                     onClick={() => this.props.openAssigneeModal('')}
                                 >
-                                    {'Assign to…'}
+                                    {'담당자'}
                                 </Chip>
                             )}
                             {assignee && (
@@ -221,9 +221,9 @@ export default class AddIssue extends React.PureComponent {
                                         sendTo: selected?.username,
                                     })
                                 }
-                                label={'Send to user'}
+                                label={'다른 멤버에게 보내기'}
                                 helpText={
-                                    'Select a user if you want to send this todo.'
+                                    '이 Todo를 다른 멤버에게 보내려면 대상 멤버를 선택하세요.'
                                 }
                                 placeholder={''}
                                 theme={theme}
@@ -240,7 +240,7 @@ export default class AddIssue extends React.PureComponent {
                         size='small'
                         onClick={this.close}
                     >
-                        {'Cancel'}
+                        {'취소'}
                     </Button>
                     <Button
                         emphasis='primary'
@@ -248,7 +248,7 @@ export default class AddIssue extends React.PureComponent {
                         onClick={this.submit}
                         disabled={!message}
                     >
-                        {'Save'}
+                        {'저장'}
                     </Button>
                 </div>
             </div>

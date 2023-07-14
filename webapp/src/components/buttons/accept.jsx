@@ -9,7 +9,7 @@ const AcceptButton = (props) => {
             emphasis={'secondary'}
             onClick={() => props.accept(props.issueId)}
         >
-            {'Add to my list'}
+            {'내 목록에 추가'}
         </Button>
     );
 };

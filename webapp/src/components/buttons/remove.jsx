@@ -9,7 +9,7 @@ const RemoveButton = (props) => {
             emphasis='tertiary'
             onClick={() => props.remove(props.issueId)}
         >
-            {props.list === 'out' ? 'Cancel' : 'Won\'t do'}
+            {props.list === 'out' ? 'Cancel' : '거절'}
         </Button>
     );
 };

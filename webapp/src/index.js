@@ -28,7 +28,7 @@ export default class Plugin {
         registry.registerBottomTeamSidebarComponent(TeamSidebar);
 
         registry.registerPostDropdownMenuAction(
-            'Add Todo',
+            'Todo에 추가',
             (postID) => {
                 telemetry('post_action_click');
                 store.dispatch(openAddCard(postID));
@@ -44,7 +44,7 @@ export default class Plugin {
                 store.dispatch(toggleRHSPlugin);
             },
             'Todo',
-            'Open your list of Todo issues',
+            'Todo 목록 열기',
         );
 
         const getFrontendListName = (backendListName) => {
@@ -77,7 +77,7 @@ export default class Plugin {
         registry.registerAppBarComponent(
             iconURL,
             () => store.dispatch(toggleRHSPlugin),
-            'Open your list of Todo issues',
+            'Todo 목록 열기',
         );
 
         registry.registerWebSocketEventHandler(`custom_${pluginId}_refresh`, refresh);

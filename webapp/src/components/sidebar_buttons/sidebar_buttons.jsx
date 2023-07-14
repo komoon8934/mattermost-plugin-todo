@@ -58,7 +58,7 @@ export default class SidebarButtons extends React.PureComponent {
                 <OverlayTrigger
                     key='myTodosLink'
                     placement={placement}
-                    overlay={<Tooltip id='myTodosTooltip'>{'Your Todos'}</Tooltip>}
+                    overlay={<Tooltip id='myTodosTooltip'>{'내 Todo'}</Tooltip>}
                 >
                     <a
                         style={button}
@@ -74,7 +74,7 @@ export default class SidebarButtons extends React.PureComponent {
                 <OverlayTrigger
                     key='incomingTodosLink'
                     placement={placement}
-                    overlay={<Tooltip id='incomingTodosTooltip'>{'Incoming Todos'}</Tooltip>}
+                    overlay={<Tooltip id='incomingTodosTooltip'>{'받은 Todo'}</Tooltip>}
                 >
                     <a
                         onClick={() => {
@@ -90,7 +90,7 @@ export default class SidebarButtons extends React.PureComponent {
                 <OverlayTrigger
                     key='outgoingTodosLink'
                     placement={placement}
-                    overlay={<Tooltip id='outgoingTodosTooltip'>{'Outgoing Todos'}</Tooltip>}
+                    overlay={<Tooltip id='outgoingTodosTooltip'>{'보낸 Todo'}</Tooltip>}
                 >
                     <a
                         onClick={() => {

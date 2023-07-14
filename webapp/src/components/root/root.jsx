@@ -178,7 +178,7 @@ export default class Root extends React.Component {
                             onClick={this.submit}
                             disabled={!message}
                         >
-                            {'Add Todo'}
+                            {'Todo 추가'}
                         </button>
                     </div>
                     <div className='todoplugin-divider'/>
