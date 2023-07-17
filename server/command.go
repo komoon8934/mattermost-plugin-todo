@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	listHeaderMessage = " Todo List:\n\n"
+	listHeaderMessage = " 현재 Todo 목록:\n\n"
 	MyFlag            = "my"
 	InFlag            = "in"
 	OutFlag           = "out"
@@ -36,7 +36,7 @@ list [listName]
 	예: /todo list my (/todo list와 동일)
 
 pop
-	Todo 목록의 맨 상단 항목을 제거합니다.
+	Todo 목록에서 가장 최근에 추가된 항목을 제거합니다.
 
 send [user] [message]
 	[user]에게 Todo를 보냅니다.
@@ -69,7 +69,7 @@ func getAllowIncomingTaskRequestsSetting(flag bool) string {
 	if flag {
 		return "들어오는 Task 요청 허용을 `on`으로 설정했습니다. **다른 사용자가 Task 요청을 보낼 수 있습니다. 받은 요청을 수락/거부 할 수 있습니다.**"
 	}
-	return "들어오는 Task 요청 허용을 `off`로 설정했습니다. **다른 사용자가 Task 요청을 보낼 수 없습니다. 다른 사용자에게는 내가 Task 요청을 접수 거부했다는 메시지를 받게됩니다**"
+	return "들어오는 Task 요청 허용을 `off`로 설정했습니다. **다른 사용자가 Task 요청을 보낼 수 없습니다. 다른 사용자에게는 내가 Task 요청을 차단 중이라는 메시지가 표시됩니다**"
 }
 
 func getAllSettings(summaryFlag, blockIncomingFlag bool) string {
@@ -179,7 +179,7 @@ func (p *Plugin) runSendCommand(args []string, extra *model.CommandArgs) (bool, 
 		receiverAllowIncomingTaskRequestsPreference = true
 	}
 	if !receiverAllowIncomingTaskRequestsPreference {
-		p.postCommandResponse(extra, fmt.Sprintf("@%s은(는) Todo 요청을 차단 중입니다", userName))
+		p.postCommandResponse(extra, fmt.Sprintf("@%s은(는) Todo 요청을 차단 중입니다.", userName))
 		return false, nil
 	}
 
@@ -199,7 +199,7 @@ func (p *Plugin) runSendCommand(args []string, extra *model.CommandArgs) (bool, 
 
 	senderName := p.listManager.GetUserName(extra.UserId)
 
-	receiverMessage := fmt.Sprintf("@%s(으)로부터 새 Todo 요청을 받았습니다", senderName)
+	receiverMessage := fmt.Sprintf("@%s(으)로부터 새 Todo 요청을 받았습니다.", senderName)
 
 	p.PostBotCustomDM(receiver.Id, receiverMessage, message, receiverIssueID)
 	p.postCommandResponse(extra, responseMessage)
@@ -308,9 +308,9 @@ func (p *Plugin) runPopCommand(args []string, extra *model.CommandArgs) (bool, e
 
 	p.sendRefreshEvent(extra.UserId, []string{MyListKey})
 
-	responseMessage := "맨 위에 있는 Todo 항목을 제거했습니다."
+	responseMessage := "가장 최근에 등록된 Todo 항목을 제거했습니다."
 
-	replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 첨부된 Todo 맨 위 항목을 제거했습니다", userName)
+	replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 첨부된 가장 최근 Todo 항목을 제거했습니다", userName)
 	p.postReplyIfNeeded(issue.PostID, replyMessage, issue.Message)
 
 	issues, err := p.listManager.GetIssueList(extra.UserId, MyListKey)
@@ -396,10 +396,10 @@ func (p *Plugin) runSettingsCommand(args []string, extra *model.CommandArgs) (bo
 		switch args[1] {
 		case on:
 			err = p.saveAllowIncomingTaskRequestsPreference(extra.UserId, true)
-			responseMessage = "다른 사용자들이 Task 요청을 보낼 수 있습니다. 받은 요청은 수락/거부할 수 있습니다"
+			responseMessage = "다른 사용자들이 Task 요청을 보낼 수 있습니다. 받은 요청은 수락/거부할 수 있습니다."
 		case off:
 			err = p.saveAllowIncomingTaskRequestsPreference(extra.UserId, false)
-			responseMessage = "다른 사용자들이 Task 요청을 보낼 수 없습니다. 요청을 보낸 사용자는 내가 Task 요청을 접수 거부했다는 메시지를 받게됩니다."
+			responseMessage = "다른 사용자들이 Task 요청을 보낼 수 없습니다. 요청을 보낸 사용자는 내가 Task 요청을 차단 중이라는 메시지를 받게됩니다."
 		default:
 			responseMessage = "유효하지 않은 입력, \"settings allow_incoming_task_requests\"에 허용되는 값은 `on` 또는 `off`입니다."
 			return true, errors.New(responseMessage)
@@ -442,7 +442,7 @@ func getAutocompleteData() *model.AutocompleteData {
 	todo.AddCommand(pop)
 
 	send := model.NewAutocompleteData("send", "[user] [todo]", "특정 사용자에게 Todo 보내기")
-	send.AddTextArgument("받을 사용자", "[@awesomePerson]", "")
+	send.AddTextArgument("받을 사용자", "[@user]", "")
 	send.AddTextArgument("Todo 메시지", "[message]", "")
 	todo.AddCommand(send)
 
@@ -453,7 +453,7 @@ func getAutocompleteData() *model.AutocompleteData {
 	summary.AddCommand(summaryOn)
 	summary.AddCommand(summaryOff)
 
-	allowIncomingTask := model.NewAutocompleteData("allow_incoming_task_requests", "[on] [off]", "다른 사용자가 나에게 Task 보내기를 허용여부 설정")
+	allowIncomingTask := model.NewAutocompleteData("allow_incoming_task_requests", "[on] [off]", "다른 사용자가 나에게 Task 보내기 허용여부 설정")
 	allowIncomingTaskOn := model.NewAutocompleteData("on", "", "다른 사용자는 Task 요청을 보낼 수 있고 내가 수락/거부를 결정")
 	allowIncomingTaskOff := model.NewAutocompleteData("off", "", "다른 사용자의 Task 요청을 차단하고, 보낸 사용자에게는 내가 Todo Task 요청을 차단 중임을 알림")
 	allowIncomingTask.AddCommand(allowIncomingTaskOn)

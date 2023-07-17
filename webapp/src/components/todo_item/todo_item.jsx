@@ -59,12 +59,14 @@ function TodoItem(props) {
     if (issue.user) {
         if (issue.list === '') {
             createdMessage = issue.user + '에게 보냈습니다';
-            listPositionMessage =
-                'Accepted. On position ' + (issue.position + 1) + '.';
+            listPositionMessage = '수락함';
+
+            // 'Accepted. On position ' + (issue.position + 1) + '.';
         } else if (issue.list === 'in') {
             createdMessage = issue.user + '에게 보냈습니다';
-            listPositionMessage =
-                'In Inbox on position ' + (issue.position + 1) + '.';
+            listPositionMessage = '현재 수신함에 있음';
+
+            // 'In Inbox on position ' + (issue.position + 1) + '.';
         } else if (issue.list === 'out') {
             createdMessage = '보낸 사용자: ' + issue.user;
             listPositionMessage = '';

@@ -195,7 +195,7 @@ func (p *Plugin) handleAdd(w http.ResponseWriter, r *http.Request) {
 
 		p.sendRefreshEvent(userID, []string{MyListKey})
 
-		replyMessage := fmt.Sprintf("@%s attached a todo to this thread", senderName)
+		replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 Todo를 생성했습니다", senderName)
 		p.postReplyIfNeeded(addRequest.PostID, replyMessage, addRequest.Message)
 
 		return
@@ -220,7 +220,7 @@ func (p *Plugin) handleAdd(w http.ResponseWriter, r *http.Request) {
 
 		p.sendRefreshEvent(userID, []string{MyListKey})
 
-		replyMessage := fmt.Sprintf("@%s attached a todo to this thread", senderName)
+		replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 Todo를 생성했습니다.", senderName)
 		p.postReplyIfNeeded(addRequest.PostID, replyMessage, addRequest.Message)
 		return
 	}
@@ -231,7 +231,7 @@ func (p *Plugin) handleAdd(w http.ResponseWriter, r *http.Request) {
 		receiverAllowIncomingTaskRequestsPreference = true
 	}
 	if !receiverAllowIncomingTaskRequestsPreference {
-		replyMessage := fmt.Sprintf("@%s has blocked Todo requests", receiver.Username)
+		replyMessage := fmt.Sprintf("@%s은(는) Todo 요청을 차단했습니다.", receiver.Username)
 		p.PostBotDM(userID, replyMessage)
 		return
 	}
@@ -248,10 +248,10 @@ func (p *Plugin) handleAdd(w http.ResponseWriter, r *http.Request) {
 	p.sendRefreshEvent(userID, []string{OutListKey})
 	p.sendRefreshEvent(receiver.Id, []string{InListKey})
 
-	receiverMessage := fmt.Sprintf("You have received a new Todo from @%s", senderName)
+	receiverMessage := fmt.Sprintf("@%s(으)로부터 새 Todo 항목을 받았습니다.", senderName)
 	p.PostBotCustomDM(receiver.Id, receiverMessage, addRequest.Message, issueID)
 
-	replyMessage := fmt.Sprintf("@%s sent @%s a todo attached to this thread", senderName, addRequest.SendTo)
+	replyMessage := fmt.Sprintf("@%s이(가) @%s에게 이 스레드에서 대한 Todo를 보냈습니다", senderName, addRequest.SendTo)
 	p.postReplyIfNeeded(addRequest.PostID, replyMessage, addRequest.Message)
 }
 
@@ -369,7 +369,7 @@ func (p *Plugin) handleEdit(w http.ResponseWriter, r *http.Request) {
 		p.sendRefreshEvent(foreignUserID, lists)
 
 		userName := p.listManager.GetUserName(userID)
-		message := fmt.Sprintf("@%s modified a Todo from:\n%s\nTo:\n%s", userName, oldMessage, editRequest.Message)
+		message := fmt.Sprintf("@%s이(가) Todo를 수정했습니다.\n수정 전:\n%s\n수정 후:\n%s", userName, oldMessage, editRequest.Message)
 		p.PostBotDM(foreignUserID, message)
 	}
 }
@@ -421,12 +421,12 @@ func (p *Plugin) handleChangeAssignment(w http.ResponseWriter, r *http.Request) 
 	userName := p.listManager.GetUserName(userID)
 	if receiver.Id != userID {
 		p.sendRefreshEvent(receiver.Id, []string{InListKey})
-		receiverMessage := fmt.Sprintf("You have received a new Todo from @%s", userName)
+		receiverMessage := fmt.Sprintf("@%s(으)로부터 새 Todo를 받았습니다.", userName)
 		p.PostBotCustomDM(receiver.Id, receiverMessage, issueMessage, changeRequest.ID)
 	}
 	if oldOwner != "" {
 		p.sendRefreshEvent(oldOwner, []string{InListKey, MyListKey})
-		oldOwnerMessage := fmt.Sprintf("@%s removed you from Todo:\n%s", userName, issueMessage)
+		oldOwnerMessage := fmt.Sprintf("@%s(이)가 다음 Todo 담당자에서 나를 제외시켰습니다:\n%s", userName, issueMessage)
 		p.PostBotDM(oldOwner, oldOwnerMessage)
 	}
 }
@@ -498,7 +498,7 @@ func (p *Plugin) handleComplete(w http.ResponseWriter, r *http.Request) {
 	p.trackCompleteIssue(userID)
 
 	userName := p.listManager.GetUserName(userID)
-	replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 첨부된 Todo를 완료했습니다", userName)
+	replyMessage := fmt.Sprintf("@%s이(가) 이 스레드에 연결된 Todo를 완료했습니다", userName)
 	p.postReplyIfNeeded(issue.PostID, replyMessage, issue.Message)
 
 	if foreignID == "" {
